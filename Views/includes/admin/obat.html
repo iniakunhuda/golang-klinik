@@ -1,0 +1,155 @@
+{{ define "content" }}
+
+    <div class="mt-5">
+        <h3 class="mb-3">Obat</h3>
+        <div class="row">
+            <div class="col-4">
+                <form id="frmAdd" action="/v1/obat/obat" method="POST">
+                    <input type="hidden" name="id">
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Nama</label>
+                        <input type="text" class="form-control" name="nama" placeholder="Nama">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Penyakit</label>
+                        <input type="text" class="form-control" name="penyakit" placeholder="Penyakit">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Harga</label>
+                        <input type="text" class="form-control" name="harga" placeholder="Harga">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Stok</label>
+                        <input type="text" class="form-control" name="stok" placeholder="Stok">
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" type="button" id="btnAdd">Simpan Data</button>
+                    <button class="btn btn-danger" type="reset">Reset</button>
+                </form>
+            </div>
+            <div class="col-8" style="padding-left: 7%;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama</th>
+                            <th>Penyakit</th>
+                            <th>Harga</th>
+                            <th>Stok</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .obats}}
+                        <tr>
+                            <td>{{ .Id }}</td>
+                            <td>{{ .Nama }}</td>
+                            <td>{{ .Penyakit }}</td>
+                            <td>{{ .Harga }}</td>
+                            <td>{{ .Stok }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary btnEdit" type="button" data-id="{{ .Id }}">Edit</button>
+                                <button class="btn btn-sm btn-danger btnDelete" type="button" data-id="{{ .Id }}">Delete</button>
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#btnAdd').click(function(){
+                let data = {
+                    nama: $('input[name="nama"]').val(),
+                    penyakit: $('input[name="penyakit"]').val(),
+                    harga: parseInt($('input[name="harga"]').val()),
+                    stok: parseInt($('input[name="stok"]').val()),
+                }
+
+                let id = $('input[name="id"]').val();
+                let url = $('#frmAdd').attr('action');
+                let type = 'post';
+
+                if((id != "") && (id != undefined)) {
+                    url += "/" + id;
+                    type = "put";
+                }
+
+                $.ajax({
+                    url: url,
+                    type: type,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        if((id != "") && (id != undefined)) {
+                            alert("Sukses memperbarui data");
+                        } else {
+                            alert("Sukses menambah data");
+                        }
+                        window.location.reload();
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+
+            $('.btnDelete').click(function(){
+                let id = $(this).data('id');
+                let data = {
+                    id: id
+                }
+
+                $.ajax({
+                    url: $('#frmAdd').attr('action') + "/" + id,
+                    type: 'delete',
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        alert("Sukses menghapus data");
+                        window.location.reload();
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+
+            $('.btnEdit').click(function(){
+                let id = $(this).data('id');
+                let data = {
+                    id: id
+                }
+
+                $('input[name="id"]').val(id);
+
+                $.ajax({
+                    url: $('#frmAdd').attr('action') + "/" + id,
+                    type: 'GET',
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        $('input[name="id"]').val(data.id);
+                        $('input[name="nama"]').val(data.nama);
+                        $('input[name="penyakit"]').val(data.penyakit);
+                        $('input[name="harga"]').val(data.harga);
+                        $('input[name="stok"]').val(data.stok);
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+        })
+    </script>
+
+{{ end }}

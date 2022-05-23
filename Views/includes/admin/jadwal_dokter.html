@@ -1,0 +1,219 @@
+{{ define "content" }}
+
+    <div class="mt-5">
+        <h3 class="mb-3">Jadwal Dokter</h3>
+        <div class="row">
+            <div class="col-4">
+                <form id="frmAdd" action="/v1/klinik/dokter_jadwal" method="POST">
+                    <input type="hidden" name="id">
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Dokter</label>
+                        <select name="dokter_id" class="form-control">
+                            <option value="">Pilih Dokter</option>
+                            {{ range .dokters}}
+                                <option value="{{ .Id }}">{{ .Nama }}</option>
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Klinik</label>
+                        <select name="klinik_id" class="form-control">
+                            <option value="">Pilih Klinik</option>
+                            {{ range .kliniks}}
+                                <option value="{{ .Id }}">{{ .Nama }}</option>
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Poli</label>
+                        <select name="poli_id" class="form-control">
+                            <option value="">Pilih Poli</option>
+                            {{ range .polis}}
+                                <option value="{{ .Id }}">{{ .Nama }}</option>
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Hari</label>
+                        <select name="hari" class="form-control">
+                            <option value="">Pilih Hari</option>
+                            <option value="SENIN">SENIN</option>
+                            <option value="SELASA">SELASA</option>
+                            <option value="RABU">RABU</option>
+                            <option value="KAMIS">KAMIS</option>
+                            <option value="JUMAT">JUMAT</option>
+                            <option value="SABTU">SABTU</option>
+                            <option value="MINGGU">MINGGU</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label mb-1">Jam Mulai</label>
+                                <input type="text" class="form-control" name="jam_mulai" placeholder="ex: 7">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label mb-1">Jam Selesai</label>
+                                <input type="text" class="form-control" name="jam_selesai" placeholder="ex: 21">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Aktif?</label>
+                        <select name="is_active" class="form-control">
+                            <option value="ya">Ya</option>
+                            <option value="tidak">Tidak</option>
+                        </select>
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" type="button" id="btnAdd">Simpan Data</button>
+                    <button class="btn btn-danger" type="reset">Reset</button>
+                </form>
+            </div>
+            <div class="col-8" style="padding-left: 7%;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama Dokter</th>
+                            <th>Klinik</th>
+                            <th>Poli</th>
+                            <th>Jadwal</th>
+                            <th>Aktif?</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .dokter_jadwals}}
+                        <tr>
+                            <td>{{ .Id }}</td>
+                            <td>{{ .Dokter.Nama }}</td>
+                            <td>{{ .Klinik.Nama }}</td>
+                            <td>{{ .Poli.Nama }}</td>
+                            <td>
+                                {{ .Hari }}
+                                <br>
+                                {{ .JamMulai }} - {{ .JamSelesai }}
+                            </td>
+                            <td>
+                                {{ .IsActive }}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary btnEdit" type="button" data-id="{{ .Id }}">Edit</button>
+                                <button class="btn btn-sm btn-danger btnDelete" type="button" data-id="{{ .Id }}">Delete</button>
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#btnAdd').click(function(){
+                let data = {
+                    klinik_id: parseInt($('select[name="klinik_id"]').val()),
+                    dokter_id: parseInt($('select[name="dokter_id"]').val()),
+                    poli_id: parseInt($('select[name="poli_id"]').val()),
+                    hari: ($('select[name="hari"]').val()),
+                    jam_mulai: parseInt($('input[name="jam_mulai"]').val()),
+                    jam_selesai: parseInt($('input[name="jam_selesai"]').val()),
+                    is_active: ($('select[name="is_active"]').val() == 'ya') ? 1 : 0,
+                }
+                console.log("DATTAAAA", data);
+
+                let id = $('input[name="id"]').val();
+                let url = $('#frmAdd').attr('action');
+                let type = 'post';
+
+                if((id != "") && (id != undefined)) {
+                    url += "/" + id;
+                    type = "put";
+                }
+
+                $.ajax({
+                    url: url,
+                    type: type,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        if((id != "") && (id != undefined)) {
+                            alert("Sukses memperbarui data");
+                        } else {
+                            alert("Sukses menambah data");
+                        }
+                        window.location.reload();
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+
+            $('.btnDelete').click(function(){
+                let id = $(this).data('id');
+                let data = {
+                    id: id
+                }
+
+                $.ajax({
+                    url: $('#frmAdd').attr('action') + "/" + id,
+                    type: 'delete',
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        alert("Sukses menghapus data");
+                        window.location.reload();
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+
+            $('.btnEdit').click(function(){
+                let id = $(this).data('id');
+                let data = {
+                    id: id
+                }
+
+                $('input[name="id"]').val(id);
+
+                $.ajax({
+                    url: $('#frmAdd').attr('action') + "/" + id,
+                    type: 'GET',
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        $('input[name="id"]').val(data.id);
+                        $('select[name="dokter_id"]').val(data.dokter_id);
+                        $('select[name="klinik_id"]').val(data.klinik_id);
+                        $('select[name="poli_id"]').val(data.poli_id);
+                        $('select[name="hari"]').val(data.hari);
+                        $('input[name="jam_mulai"]').val(data.jam_mulai);
+                        $('input[name="jam_selesai"]').val(data.jam_selesai);
+
+                        if(data.is_active) {
+                            $('select[name="is_active"]').val('ya');
+                        } else {
+                            $('select[name="is_active"]').val('tidak');
+                        }
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+        })
+    </script>
+
+{{ end }}

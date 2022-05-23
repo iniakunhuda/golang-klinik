@@ -1,0 +1,75 @@
+{{ define "content" }}
+
+<div class="jumbotron">
+    <h1 class="display-4">Aplikasi Antrian Klinik</h1>
+    <p class="lead">Cari & Antri di Klinik dengan lebih mudah dan cepat</p>
+</div>
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-3">
+            <form action="" method="GET">
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-action active">
+                        <strong>PENCARIAN</strong>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <label for="">Klinik</label>
+                        <select name="klinik_id" class="form-control">
+                            <option value="">Semua Klinik</option>
+                            {{ range .kliniks}}
+                                <option value="{{ .Id }}" {{ if eq .Id $.filter.Klinik }}selected{{ end }}>{{ .Nama }}</option>
+                            {{end}}
+                        </select>
+                        <br>
+                        
+                        <label for="">Poli</label>
+                        <select name="poli_id" class="form-control">
+                            <option value="">Semua Poli</option>
+                            {{ range .pilihan_polis}}
+                                <option value="{{ .Id }}" {{ if eq .Id $.filter.Poli }}selected{{ end }}>{{ .Nama }}</option>
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <button class="btn btn-dark btn-block" type="submit" id="btnAdd">Cari Data</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-9">
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <p class="text-muted">
+                        Ditemukan {{ len .polis }} Klinik Terdekat
+                    </p>
+                </div>
+                {{ range .polis}}
+                <div class="col-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-0">
+                                {{ .NamaKlinik }}
+                            </h4>
+                            <p class="p-0 m-0">
+                                <small class="text-muted">
+                                    {{ .AlamatKlinik }}
+                                </small>
+                            </p>
+                            <hr class="mb-0">
+                            <p class="p-0 m-0 mt-3">
+                                Poli : <strong>{{ .Nama }}</strong><br>
+                                Total Pasien Antri : <strong>{{ .TotalAntrian }}</strong> pasien<br>
+                            </p>
+                            <a href="/register/{{ .KlinikID }}/{{ .Id }}" class="btn btn-primary btn-block mt-3">Antri</a>
+                        </div>
+                    </div>
+                </div>
+                {{end}}
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ end }}

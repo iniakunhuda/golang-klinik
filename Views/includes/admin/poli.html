@@ -1,0 +1,145 @@
+{{ define "content" }}
+
+    <div class="mt-5">
+        <h3 class="mb-3">Poli</h3>
+        <div class="row">
+            <div class="col-4">
+                <form id="frmAdd" action="/v1/klinik/poli" method="POST">
+                    <input type="hidden" name="id">
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Klinik</label>
+                        <select name="klinik_id" class="form-control">
+                            <option value="">Pilih Klinik</option>
+                            {{ range .kliniks}}
+                                <option value="{{ .Id }}">{{ .Nama }}</option>
+                            {{end}}
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label mb-1">Poli</label>
+                        <input type="text" class="form-control" name="nama" placeholder="Poli Umum">
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" type="button" id="btnAdd">Simpan Data</button>
+                    <button class="btn btn-danger" type="reset">Reset</button>
+                </form>
+            </div>
+            <div class="col-8" style="padding-left: 7%;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama Klinik</th>
+                            <th>Poli</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .polis}}
+                        <tr>
+                            <td>{{ .Id }}</td>
+                            <td>{{ .Klinik.Nama }}</td>
+                            <td>{{ .Nama }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary btnEdit" type="button" data-id="{{ .Id }}">Edit</button>
+                                <button class="btn btn-sm btn-danger btnDelete" type="button" data-id="{{ .Id }}">Delete</button>
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#btnAdd').click(function(){
+                let data = {
+                    nama: $('input[name="nama"]').val(),
+                    klinik_id: parseInt($('select[name="klinik_id"]').val()),
+                }
+
+                let id = $('input[name="id"]').val();
+                let url = $('#frmAdd').attr('action');
+                let type = 'post';
+
+                if((id != "") && (id != undefined)) {
+                    url += "/" + id;
+                    type = "put";
+                }
+
+                $.ajax({
+                    url: url,
+                    type: type,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        if((id != "") && (id != undefined)) {
+                            alert("Sukses memperbarui data");
+                        } else {
+                            alert("Sukses menambah data");
+                        }
+                        window.location.reload();
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+
+            $('.btnDelete').click(function(){
+                let id = $(this).data('id');
+                let data = {
+                    id: id
+                }
+
+                $.ajax({
+                    url: $('#frmAdd').attr('action') + "/" + id,
+                    type: 'delete',
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        alert("Sukses menghapus data");
+                        window.location.reload();
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+
+            $('.btnEdit').click(function(){
+                let id = $(this).data('id');
+                let data = {
+                    id: id
+                }
+
+                $('input[name="id"]').val(id);
+
+                $.ajax({
+                    url: $('#frmAdd').attr('action') + "/" + id,
+                    type: 'GET',
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        $('input[name="id"]').val(data.id);
+                        $('select[name="klinik_id"]').val(data.klinik_id);
+                        $('input[name="nama"]').val(data.nama);
+                    },
+                    failure: function(errMsg) {
+                        alert("Error!");
+                        console.log(errMsg)
+                    }
+                });
+            });
+        })
+    </script>
+
+{{ end }}

@@ -1,0 +1,76 @@
+{{ define "content" }}
+
+<style>
+    body {
+        background: #DDD;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h4>Register ke Antrian Klinik</h4>
+            <p class="text-muted">Silahkan daftar sesuai data Anda</p>
+            <br>
+            <form action="/account/register" method="POST">
+                <div class="form-group">
+                    <label for="">Nama Lengkap</label>
+                    <input type="text" name="nama" placeholder="ex: Miftah" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">Tanggal Lahir</label>
+                    <input type="date" name="tgl_lahir" placeholder="ex: 17-08-1988" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">Nomor BPJS</label>
+                    <input type="text" name="bpjs" placeholder="ex: 08111" class="form-control">
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="">Provinsi</label>
+                            <input type="text" name="provinsi" placeholder="ex: Jawa Timur" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="">Kota</label>
+                            <input type="text" name="kota" placeholder="ex: Bangkalan" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="">Kodepos</label>
+                    <input type="text" name="kodepos" placeholder="ex: 6011" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">Alamat Lengkap</label>
+                    <input type="text" name="alamat" placeholder="ex: Jl. Nama Jalan, Gang/No Rumah" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">Riwayat Penyakit</label>
+                    <textarea name="riwayat" id="" cols="30" rows="5" class="form-control"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="">HP</label>
+                            <input type="text" name="hp" placeholder="ex: 08211111" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="">Password</label>
+                            <input type="text" name="password" placeholder="Password" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block">DAFTAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{ end }}
